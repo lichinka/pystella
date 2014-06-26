@@ -3,18 +3,11 @@ import sys
 import numpy
 import math
 
-width = int(sys.argv[2])
-height = int(sys.argv[3])
-image_in = open(sys.argv[1], 'rb')
-stdev_d = 3
-stdev_s = 70
-radius = stdev_d * 3
-
 
 
 # --------------------------------------------------------------
 # DEFINITION of the Coriolis stencil object
-
+#
 class CoriolisKernel (StencilKernel):
     """
     Class definition of the Coriolis stencil.-
@@ -35,7 +28,6 @@ class CoriolisKernel (StencilKernel):
                  in_fc * np.average (in_v.neigh (center, 1))
                ) / 2.0
 
-
     def _VSlowTensStage (self, center, in_u, in_fc):
         """
         The 'Do' function of the V stage.
@@ -47,23 +39,21 @@ class CoriolisKernel (StencilKernel):
                                                           (-1, 1))))
                ) / 2.0
 
-
     def kernel (self, in_u, in_v, in_fc, out_utens, out_vtens):
         """
         This stencil comprises two independent stages.-
         """
-        out_utens.define_sweep ('cKIncrement')
-        for p in out_utens.interior_points ( ):
+        for p in out_utens.interior_points (sweep='cKIncrement'):
             out_utens[p] += self._USlowTensStage (p, in_v, in_fc) 
 
-        out_vtens.define_sweep ('cKIncrement')
-        for p in out_vtens.interior_points ( ):
+        for p in out_vtens.interior_points (sweep='cKIncrement'):
             out_vtens[p] -= self._VSlowTensStage (p, in_u, in_fc)
+
 
 
 # --------------------------------------------------------------
 # USAGE of the Coriolis stencil object defined above
-
+#
 kernel               = CoriolisKernel ( )
 kernel.should_unroll = False
 kernel.pure_python   = False
@@ -82,16 +72,16 @@ boundaries = {'i': (0, 0),
 #
 # data-field definitions
 #
-u = IJKRealField (np.random.random_floats (0, 10, calculationDomain))
+u = IJKRealField (np.random.random (0, 10, calculationDomain))
 u.set_boundaries (**boundaries)
 
-v = IJKRealField (np.random.random_floats (0, 10, calculationDomain))
+v = IJKRealField (np.random.random (0, 10, calculationDomain))
 v.set_boundaries (**boundaries)
 
-utens = IJKRealField (np.random.random_floats (0, 10, calculationDomain))
+utens = IJKRealField (np.random.random (0, 10, calculationDomain))
 utens.set_boundaries (**boundaries)
 
-vtens = IJKRealField (np.random.random_floats (0, 10, calculationDomain))
+vtens = IJKRealField (np.random.random (0, 10, calculationDomain))
 vtens.set_boundaries (**boundaries)
 
 #
