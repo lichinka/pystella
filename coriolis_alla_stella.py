@@ -17,8 +17,8 @@ def uStageDo (utens, v, fc):
     """
     The 'Do' function of the U stage, with the Coriolis force directly applied:
 
-       utens   a 3D numpy array, representing ???;
-       v       a 3D numpy array, representing ???;
+       utens   a STELLA data field, representing ???;
+       v       a STELLA data fiedl, representing ???;
        fc      a scalar representing the force.-
     """
     res = fc * average (v, v.iplus1)
@@ -30,14 +30,14 @@ def uStageDo (utens, v, fc):
 #
 vSlowTensStage = coriolis.addStage ( )
 
-@vSlowTensStage.attachDo
+@vSlowTensStage.attachDo (IJKRealField, IJKRealField, Scalar)
 def vStageDo (vtens, u, fc):
     """
     The 'Do' function of the V stage, with the Coriolis force defined
     as a private function:
 
-       vtens   a 3D numpy array, representing ???;
-       u       a 3D numpy array, representing ???;
+       vtens   a STELLA data field, representing ???;
+       u       a STELLA data field, representing ???;
        fc      a scalar, representing the force.-
     """
     def coriolisForce (frc, vel):

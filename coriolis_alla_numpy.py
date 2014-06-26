@@ -24,11 +24,16 @@ def uStageDo (utens, v, fc):
     #
     neigh = np.array ([[0.0, 0.0, 0.0],
                        [0.0,  fc,  fc],
-                       [0.0, 0.0, 0.0])
+                       [0.0, 0.0, 0.0]])
+    neigh = np.zeros (shape=(3, 3), dtype=np.float32)
+    neigh[0, 0] = 1.0
+        ...
     #
     # the 'mode' and 'cval' parameters define the boundary conditions
     #
-    res = (convolve (v, neigh, mode='constant', cval=0.0)) / 2.0
+    res = (np.convolve (v, neigh, mode='constant', cval=0.0)) / 2.0
+    
+    res = (v.neigh(0,0) + utens.neigh(1,0)) / 2.0
 
     #
     # neighborhood for v.jminus1 and v.jminus1.iplus1
@@ -39,7 +44,7 @@ def uStageDo (utens, v, fc):
     #
     # the 'mode' and 'cval' parameters define the boundary conditions
     #
-    res += (convolve (v, neigh, mode='constant', cval=0.0)) / 2.0
+    res += (np.convolve (v, neigh, mode='constant', cval=0.0)) / 2.0
     utens += res / 2.0
 
 
@@ -73,7 +78,7 @@ def vStageDo (vtens, u, fc):
     # the 'mode' and 'cval' parameters define the boundary conditions
     #
     res += ((convolve (u, neigh, mode='constant', cval=0.0)) / 2.0) * fc
-    vtens += res / 2.0
+    vtens -= res / 2.0
 
 #
 # the output of the 'uSlowTensStage' is used as input of the 'vSlowTensStage'
