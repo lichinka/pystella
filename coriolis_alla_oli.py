@@ -1,7 +1,5 @@
 from stencil_kernel import *
-import sys
-import numpy
-import math
+
 
 
 
@@ -19,24 +17,22 @@ class CoriolisKernel (StencilKernel):
     _neighborhoods[0] = [(0, 0), (1, 0)]
     _neighborhoods[1] = [(0, -1), (1, -1)]
 
-    def _USlowTensStage (self, center, in_v, in_fc):
+    def _USlowTensStage (self, ctr, in_v, in_fc):
         """
         The 'Do' function of the U stage.
         This stage uses neighborhood definitions.-
         """
-        return ( in_fc * np.average (in_v.neigh (center, 0)) +
-                 in_fc * np.average (in_v.neigh (center, 1))
+        return ( in_fc * np.average (in_v.neigh (ctr, 0)) +
+                 in_fc * np.average (in_v.neigh (ctr, 1))
                ) / 2.0
 
-    def _VSlowTensStage (self, center, in_u, in_fc):
+    def _VSlowTensStage (self, ctr, in_u, in_fc):
         """
         The 'Do' function of the V stage.
         This stage uses enumerated neighbors.-
         """
-        return ( in_fc * np.average (in_v.neigh (center, ((0, 0),
-                                                          (0, 1)))) +
-                 in_fc * np.average (in_v.neigh (center, ((-1, 0),
-                                                          (-1, 1))))
+        return ( in_fc * np.average (in_v[ctr[0, 0]], in_v[ctr[0, 1]]) +
+                 in_fc * np.average (in_v[ctr[-1, 0]], in_v[ctr[-1, 1]])
                ) / 2.0
 
     def kernel (self, in_u, in_v, in_fc, out_utens, out_vtens):
@@ -54,9 +50,10 @@ class CoriolisKernel (StencilKernel):
 # --------------------------------------------------------------
 # USAGE of the Coriolis stencil object defined above
 #
-kernel               = CoriolisKernel ( )
-kernel.should_unroll = False
-kernel.pure_python   = False
+kernel = CoriolisKernel ( )
+
+kernel.compilation.should_unroll = False
+kernel.compilation.backend       = 'cxx'
 
 #
 # the calculation domain on which the stencil will be applied
@@ -100,7 +97,7 @@ kernel.kernel (u,
                utens,
                vtens)
 #
-# print the final state
+# print out the final state
 #
 print ("State after initial step")
 print (utens)

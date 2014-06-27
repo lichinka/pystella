@@ -1,7 +1,5 @@
 from stencil_kernel import *
-import sys
-import numpy
-import math
+
 
 
 
@@ -26,29 +24,29 @@ class FastWavesSCTridiag (StencilKernel):
         self.bet = IJKRealField (domain)
 
 
-    def _ForwardStage (self, center, in_b, in_rhs):
+    def _ForwardStage (self, ctr, in_b, in_rhs):
         """
         The 'Do' function of the Forward stage, applied over the KMinimunCenter.-
         """
-        self.bet[center] = in_b[center]
-        self.y[center]   = in_rhs[center] / self.bet[center]
+        self.bet[ctr] = in_b[ctr]
+        self.y[ctr]   = in_rhs[ctr] / self.bet[ctr]
 
 
-    def _ForwardStageFull (self, center, in_a, in_b, in_c, in_rhs):
+    def _ForwardStageFull (self, ctr, in_a, in_b, in_c, in_rhs):
         """
         The 'Do' function of the Forward stage, applied over the FullDomain.-
         """
-        self.tmp[center] = in_c.neigh (center, (0, 0, -1)) / self.bet[center]
-        self.bet[center] = in_b[center] - in_a[center] * self.tmp[center]
-        self.y[center]   = (in_rhs[center] - 
-                            in_a[center] * self.y.neigh (center, (0, 0, -1))) / self.bet[center]
+        self.tmp[ctr] = in_c[ctr[0, 0, -1]] / self.bet[ctr]
+        self.bet[ctr] = in_b[ctr] - in_a[ctr] * self.tmp[ctr]
+        self.y[ctr]   = (in_rhs[ctr] - 
+                         in_a[ctr] * self.y[ctr[0, 0, -1]] / self.bet[ctr]
 
 
-    def _BackwardStage (self, center, in_tmp):
+    def _BackwardStage (self, ctr, in_tmp):
         """
         The 'Do' function of the Backward stage.-
         """
-        self.y[center] -= in_tmp.neigh (center, (0, 0, 1)) * self.y.neigh (center, (0, 0, 1))
+        self.y[ctr] -= in_tmp[ctr[0, 0, 1]] * self.y[ctr[0, 0, 1]]
 
 
     def kernel (self, in_a, in_b, in_c, in_rhs):
@@ -74,7 +72,7 @@ class FastWavesSCTridiag (StencilKernel):
 #
 
 #
-# the calculation domain on which the stencil will be applied
+ the calculation domain on which the stencil will be applied
 #
 calculationDomain = (8, 8, 2)
 
@@ -129,5 +127,4 @@ kernel.kernel (a,
 #
 print ("State after initial step")
 print (self.y)
-
 
