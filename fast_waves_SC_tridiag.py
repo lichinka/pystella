@@ -26,7 +26,11 @@ class FastWavesSCTridiag (StencilKernel):
 
     def _ForwardStage (self, ctr, in_b, in_rhs):
         """
-        The 'Do' function of the Forward stage, applied over the KMinimunCenter.-
+        The 'Do' function of the Forward stage, applied over the KMinimunCenter:
+
+            ctr:    the center point of the current position;
+            in_b:   input data field;
+            in_rhs: input data field.-
         """
         self.bet[ctr] = in_b[ctr]
         self.y[ctr]   = in_rhs[ctr] / self.bet[ctr]
@@ -35,6 +39,12 @@ class FastWavesSCTridiag (StencilKernel):
     def _ForwardStageFull (self, ctr, in_a, in_b, in_c, in_rhs):
         """
         The 'Do' function of the Forward stage, applied over the FullDomain.-
+
+            ctr:    the center point of the current position;
+            in_a:   input data field;
+            in_b:   input data field;
+            in_c:   input data field;
+            in_rhs: input data field.-
         """
         self.tmp[ctr] = in_c[ctr[0, 0, -1]] / self.bet[ctr]
         self.bet[ctr] = in_b[ctr] - in_a[ctr] * self.tmp[ctr]
