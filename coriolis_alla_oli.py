@@ -13,17 +13,17 @@ class CoriolisKernel (StencilKernel):
     #
     # neighborhood definitions for the UStage
     #
-    _neighborhoods    = []
-    _neighborhoods[0] = [(0, 0), (1, 0)]
-    _neighborhoods[1] = [(0, -1), (1, -1)]
+    _neighborhoods    = {}
+    _neighborhoods['first'] = [(0, 0), (1, 0)]
+    _neighborhoods['1'] = [(0, -1), (1, -1)]
 
     def _USlowTensStage (self, ctr, in_v, in_fc):
         """
         The 'Do' function of the U stage.
         This stage uses neighborhood definitions.-
         """
-        return ( in_fc * np.average (in_v.neigh (ctr, 0)) +
-                 in_fc * np.average (in_v.neigh (ctr, 1))
+        return ( in_fc * np.average (in_v.neigh (ctr, 'first')) +
+                 in_fc * np.average (in_v.neigh (ctr, '1'))
                ) / 2.0
 
     def _VSlowTensStage (self, ctr, in_u, in_fc):

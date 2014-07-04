@@ -10,7 +10,7 @@ class FastWavesSCTridiag (StencilKernel):
     """
     Class definition of the FastWavesSCTridiag stencil.-
     """
-    def __init__ (self, domain):
+    def __init__ (self, y, bet):
         #
         # call the parent's constructor
         #
@@ -19,9 +19,9 @@ class FastWavesSCTridiag (StencilKernel):
         #
         # output fields
         #
-        self.y   = IJKRealField (domain)
-        self.tmp = IJKRealField (domain)
-        self.bet = IJKRealField (domain)
+        self.y   = y
+        self.bet = bet
+        self.tmp = IJKRealField (self.y.get_domain ( ))
 
 
     def _ForwardStage (self, ctr, in_b, in_rhs):
@@ -65,7 +65,7 @@ class FastWavesSCTridiag (StencilKernel):
         """
         for p in self.y.interior_points (sweep='cKIncrement',
                                          height='KMinimumCenter'):
-            self._ForwardStage (p, in_b, in_rhs) 
+            self._ForwardStage (p, in_b, in_rhs)
                                          
         for p in self.y.interior_points (sweep='cKIncrement'):
             self._ForwardStageFull (p, in_a, in_b, in_c, in_rhs) 
